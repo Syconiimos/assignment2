@@ -1,15 +1,15 @@
 Powerup = Class{}
 
-local terminalVelocity = 30
+local terminalVelocity = 40
 
 function Powerup:init(type, x, y)
     self.type = type
     self.width = 16
     self.height = 16
 
-    self.x = x - self.width
-    self.y = y - self.height
-    self.dy = 0
+    self.x = x + self.width/2 + 16
+    self.y = y
+    self.dy = 5
     self.dx = 0
     self.inPlay = true
 end

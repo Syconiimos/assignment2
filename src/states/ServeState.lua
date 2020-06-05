@@ -29,6 +29,7 @@ function ServeState:enter(params)
     -- init new ball (random color for fun)
     self.ball = Ball()
     self.ball.skin = math.random(7)
+    gSounds['music']:setVolume(0.25)
 end
 
 function ServeState:update(dt)

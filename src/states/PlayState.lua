@@ -45,12 +45,14 @@ function PlayState:update(dt)
         if love.keyboard.wasPressed('space') then
             self.paused = false
             gSounds['pause']:play()
+            gSounds['music']:setVolume(0.25)
         else
             return
         end
     elseif love.keyboard.wasPressed('space') then
         self.paused = true
         gSounds['pause']:play()
+        gSounds['music']:setVolume(0.40)
         return
     end
 
