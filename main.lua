@@ -96,7 +96,7 @@ function love.load()
         ['pause'] = love.audio.newSource('sounds/pause.wav'),
         ['powerup'] = love.audio.newSource('sounds/powerup.wav'),
 
-        ['music'] = love.audio.newSource('sounds/music.wav')
+        ['music'] = love.audio.newSource('sounds/AmbienceFinal.wav')
     }
 
     -- the state machine we'll be using to transition between various states
