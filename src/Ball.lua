@@ -28,6 +28,8 @@ function Ball:init(skin)
     -- this will effectively be the color of our ball, and we will index
     -- our table of Quads relating to the global block texture using this
     self.skin = skin
+
+    self.inPlay = true
 end
 
 --[[
@@ -62,32 +64,40 @@ function Ball:reset()
 end
 
 function Ball:update(dt)
-    self.x = self.x + self.dx * dt
-    self.y = self.y + self.dy * dt
+    if self.inPlay then
+        self.x = self.x + self.dx * dt
+        self.y = self.y + self.dy * dt
 
-    -- allow ball to bounce off walls
-    if self.x <= 0 then
-        self.x = 0
-        self.dx = -self.dx
-        gSounds['wall-hit']:play()
-    end
+        -- allow ball to bounce off walls
+        if self.x <= 0 then
+            self.x = 0
+            self.dx = -self.dx
+            gSounds['wall-hit']:play()
+        end
 
-    if self.x >= VIRTUAL_WIDTH - 8 then
-        self.x = VIRTUAL_WIDTH - 8
-        self.dx = -self.dx
-        gSounds['wall-hit']:play()
-    end
+        if self.x >= VIRTUAL_WIDTH - 8 then
+            self.x = VIRTUAL_WIDTH - 8
+            self.dx = -self.dx
+            gSounds['wall-hit']:play()
+        end
 
-    if self.y <= 0 then
-        self.y = 0
-        self.dy = -self.dy
-        gSounds['wall-hit']:play()
+        if self.y <= 0 then
+            self.y = 0
+            self.dy = -self.dy
+            gSounds['wall-hit']:play()
+        end
     end
+end
+
+function Ball:remove()
+    self.inPlay = false
 end
 
 function Ball:render()
     -- gTexture is our global texture for all blocks
     -- gBallFrames is a table of quads mapping to each individual ball skin in the texture
-    love.graphics.draw(gTextures['main'], gFrames['balls'][self.skin],
-        self.x, self.y)
+    if self.inPlay then
+        love.graphics.draw(gTextures['main'], gFrames['balls'][self.skin],
+            self.x, self.y)
+    end
 end

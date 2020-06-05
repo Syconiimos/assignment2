@@ -71,6 +71,11 @@ function LevelMaker.createMap(level)
         local solidColor = math.random(1, highestColor)
         local solidTier = math.random(0, highestTier)
 
+        local totalPowerups = math.random(1,4) + math.floor(level/5)
+        local minPowerupDistance = 5 - math.floor(level/10)
+        local maxPowerupDistance = 10 - math.floor(level/10)
+        local lastPowerup = minPowerupDistance+1
+
         for x = 1, numCols do
             -- if skipping is turned on and we're on a skip iteration...
             if skipPattern and skipFlag then
@@ -84,7 +89,7 @@ function LevelMaker.createMap(level)
                 skipFlag = not skipFlag
             end
 
-            b = Brick(
+            local b = Brick(
                 -- x-coordinate
                 (x-1)                   -- decrement x by 1 because tables are 1-indexed, coords are 0
                 * 32                    -- multiply by 32, the brick width
@@ -111,6 +116,16 @@ function LevelMaker.createMap(level)
                 b.color = solidColor
                 b.tier = solidTier
             end 
+
+            if totalPowerups > 0 then
+                if lastPowerup-minPowerupDistance > math.random(1,maxPowerupDistance-minPowerupDistance) then
+                    b.powerup = math.random(9,9)
+                    totalPowerups = totalPowerups - 1
+                    lastPowerup = 0
+                else
+                    lastPowerup = lastPowerup + 1
+                end
+            end
 
             table.insert(bricks, b)
 
