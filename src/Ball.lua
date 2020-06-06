@@ -36,21 +36,35 @@ end
     Expects an argument with a bounding box, be that a paddle or a brick,
     and returns true if the bounding boxes of this and the argument overlap.
 ]]
-function Ball:collides(target)
+function Ball:collides(t)
+    setmetatable(t,{__index={b=false}})
+    local target, center = t[1], t[2] or t.b
     -- first, check to see if the left edge of either is farther to the right
     -- than the right edge of the other
-    if self.x > target.x + target.width or target.x > self.x + self.width then
-        return false
+    if not center then
+        if self.x > target.x + target.width or target.x > self.x + self.width then
+            return false
+        end
+
+        -- then check to see if the bottom edge of either is higher than the top
+        -- edge of the other
+        if self.y > target.y + target.height or target.y > self.y + self.height then
+            return false
+        end 
+    else
+        if self.x > target.x + target.width/2 or target.x - target.width/2 > self.x + self.width then
+            return false
+        end
+
+        -- then check to see if the bottom edge of either is higher than the top
+        -- edge of the other
+        if self.y > target.y + target.height or target.y > self.y + self.height then
+            return false
+        end 
     end
-
-    -- then check to see if the bottom edge of either is higher than the top
-    -- edge of the other
-    if self.y > target.y + target.height or target.y > self.y + self.height then
-        return false
-    end 
-
     -- if the above aren't true, they're overlapping
     return true
+
 end
 
 --[[

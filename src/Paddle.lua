@@ -21,7 +21,7 @@ Paddle = Class{}
 ]]
 function Paddle:init(skin)
     -- x is placed in the middle
-    self.x = VIRTUAL_WIDTH / 2 - 32
+    
 
     -- y is placed a little above the bottom edge of the screen
     self.y = VIRTUAL_HEIGHT - 32
@@ -30,8 +30,7 @@ function Paddle:init(skin)
     self.dx = 0
 
     -- starting dimensions
-    self.width = 64
-    self.height = 16
+    
 
     -- the skin only has the effect of changing our color, used to offset us
     -- into the gPaddleSkins table later
@@ -40,6 +39,11 @@ function Paddle:init(skin)
     -- the variant is which of the four paddle sizes we currently are; 2
     -- is the starting size, as the smallest is too tough to start with
     self.size = 2
+
+    self.width = 32 * self.size
+    self.height = 16
+
+    self.x = VIRTUAL_WIDTH / 2 - self.width
 end
 
 function Paddle:update(dt)
@@ -52,23 +56,24 @@ function Paddle:update(dt)
         self.dx = 0
     end
 
+    self.width = 32 * self.size
     -- math.max here ensures that we're the greater of 0 or the player's
     -- current calculated Y position when pressing up so that we don't
     -- go into the negatives; the movement calculation is simply our
     -- previously-defined paddle speed scaled by dt
     if self.dx < 0 then
-        self.x = math.max(0, self.x + self.dx * dt)
+        self.x = math.max(0+self.width/2, self.x + self.dx * dt)
     -- similar to before, this time we use math.min to ensure we don't
     -- go any farther than the bottom of the screen minus the paddle's
     -- height (or else it will go partially below, since position is
     -- based on its top left corner)
     else
-        self.x = math.min(VIRTUAL_WIDTH - self.width, self.x + self.dx * dt)
+        self.x = math.min(VIRTUAL_WIDTH - self.width/2, self.x + self.dx * dt)
     end
 end
 
 function Paddle:collides(target)
-    if self.x > target.x + target.width or target.x > self.x + self.width then
+    if self.x-self.width/2 > target.x + target.width or target.x > self.x + self.width/2  then
         return false
     end
 
@@ -85,5 +90,5 @@ end
 ]]
 function Paddle:render()
     love.graphics.draw(gTextures['main'], gFrames['paddles'][self.size + 4 * (self.skin - 1)],
-        self.x, self.y)
+    self.x-self.width/2, self.y)
 end

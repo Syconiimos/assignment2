@@ -29,17 +29,26 @@ function PlayState:enter(params)
     --self.ball = params.ball
     self.balls = {params.ball}
     self.level = params.level
-
+    self.multiplier = 1
     self.powerups = {}
 
+    self.hitCount = 0
     self.recoverPoints = 5000
 
     -- give ball random starting velocity
     self.balls[1].dx = math.random(-200, 200)
     self.balls[1].dy = math.random(-50, -60)
+    self.timer = 0
 end
 
 function PlayState:update(dt)
+    self.timer = self.timer + dt
+
+    if self.timer > 0.05 + (self.multiplier < 10 and (10/self.multiplier)+2 or (10/self.multiplier)) then
+        self.multiplier = math.floor(math.log(self.multiplier, 2))
+        self.timer = 0
+    end
+
     local removeBalls = {}
     if self.paused then
         if love.keyboard.wasPressed('space') then
@@ -56,8 +65,19 @@ function PlayState:update(dt)
         return
     end
 
+    if self.multiplier == 1 then
+        self.paddle.size = 4
+    elseif self.multiplier == 2 then
+        self.paddle.size = 3
+    elseif self.multiplier == 4 then
+        self.paddle.size = 2
+    elseif self.multiplier >= 64 then
+        self.paddle.size = 1
+    end
+
     -- update positions based on velocity
     self.paddle:update(dt)
+
 
     if #self.powerups > 0 then
         for i, powerup in pairs(self.powerups) do
@@ -72,8 +92,9 @@ function PlayState:update(dt)
 
         ball:update(dt)
 
-        if ball:collides(self.paddle) then
+        if ball:collides({self.paddle, true}) then
             -- raise ball above paddle in case it goes below it, then reverse dy
+            self.hitCount = 0
             ball.y = self.paddle.y - 8
             ball.dy = -ball.dy
 
@@ -98,11 +119,13 @@ function PlayState:update(dt)
         for k, brick in pairs(self.bricks) do
 
             -- only check collision if we're in play
-            if brick.inPlay and ball:collides(brick) then
+            if brick.inPlay and ball:collides({brick}) then
 
                 -- add to score
-                self.score = self.score + (brick.tier * 200 + brick.color * 25)
-
+                self.hitCount = self.hitCount + 1
+                self.multiplier = self.multiplier * 2
+                self.score = self.score + self.multiplier * (brick.tier * 200 + brick.color * 25)
+                
                 -- trigger the brick's hit function, which removes it from play
                 local powerup = brick:hit()
 
